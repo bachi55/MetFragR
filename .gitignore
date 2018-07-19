@@ -3,3 +3,4 @@
 .RData
 metfRag.Rcheck
 .idea
+*.tar.gz
