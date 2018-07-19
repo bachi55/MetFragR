@@ -85,6 +85,10 @@ scored.candidates<-run.metfrag(settingsObject)
 
 ### Run candidate retrieval
 
+**Warning**: Candidate filters do currently not work as the [```retrieveCompounds```](https://github.com/c-ruttkies/MetFragRelaunched/blob/6b5ecb8299f4ebd35bb68b5a81531f68fa75b536/MetFragLib/src/main/java/de/ipbhalle/metfraglib/process/CombinedMetFragProcess.java#L76) method does not
+run the filtering. This is only done when the actual fragmentation trees are calculated. However, this
+we want to prevent here. 
+
 ```R
 #define settings
 settingsObject<-list()
@@ -96,8 +100,8 @@ settingsObject[["NeutralPrecursorMass"]]<-253.966126
 settingsObject[["NeutralPrecursorMolecularFormula"]]<-"C7H5Cl2FN2O3"
 settingsObject[["PrecursorCompoundIDs"]]<-c("50465", "57010914", "56974741", "88419651", "23354334")
 #define candidate filters
-settingsObject[["MetFragPreProcessingCandidateFilter"]]<-c("UnconnectedCompoundFilter","IsotopeFilter")
-settingsObject[["MetFragPostProcessingCandidateFilter"]]<-c("InChIKeyFilter")
+#settingsObject[["MetFragPreProcessingCandidateFilter"]]<-c("UnconnectedCompoundFilter","IsotopeFilter")
+#settingsObject[["MetFragPostProcessingCandidateFilter"]]<-c("InChIKeyFilter")
 #run MetFrag
 candidates<-run.candidateRetrieval(settingsObject)
 #candidates is a data.frame with candidate properties
