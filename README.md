@@ -35,8 +35,10 @@ due to rJava issues, disable multiarch builds:
 install_github("c-ruttkies/MetFragR/metfRag", args="--no-multiarch")
 ```
 
+Examples
+--------
 
-##### Example (Run MetFrag)
+### Run MetFrag
 ```R
 settingsObject<-list()
 settingsObject[["DatabaseSearchRelativeMassDeviation"]]<-5.0
@@ -81,3 +83,22 @@ scored.candidates<-run.metfrag(settingsObject)
 #scored.candidates is a data.frame with scores and candidate properties
 ```
 
+### Run candidate retrieval
+
+```R
+#define settings
+settingsObject<-list()
+settingsObject[["DatabaseSearchRelativeMassDeviation"]]<-5.0
+settingsObject[["FragmentPeakMatchAbsoluteMassDeviation"]]<-0.001
+settingsObject[["FragmentPeakMatchRelativeMassDeviation"]]<-5.0
+settingsObject[["MetFragDatabaseType"]]<-"PubChem"
+settingsObject[["NeutralPrecursorMass"]]<-253.966126
+settingsObject[["NeutralPrecursorMolecularFormula"]]<-"C7H5Cl2FN2O3"
+settingsObject[["PrecursorCompoundIDs"]]<-c("50465", "57010914", "56974741", "88419651", "23354334")
+#define candidate filters
+settingsObject[["MetFragPreProcessingCandidateFilter"]]<-c("UnconnectedCompoundFilter","IsotopeFilter")
+settingsObject[["MetFragPostProcessingCandidateFilter"]]<-c("InChIKeyFilter")
+#run MetFrag
+candidates<-run.candidateRetrieval(settingsObject)
+#candidates is a data.frame with candidate properties
+```
