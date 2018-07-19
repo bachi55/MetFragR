@@ -13,8 +13,10 @@ require(rJava, quietly=TRUE)
 
 #' Retrieve candidatesas according to the specifications in the settings.
 #' 
+#' The function uses defined settings for the database and retrieval to download
+#' the molecular candidates from the specified database. 
 #' 
-#' @param list of settings 
+#' @param list of parameter settings
 #' @author Eric Bach (\email{eric.bach@aalto.fi})
 #' @export
 run.candidateRetrieval<-function(settingsObject) {
@@ -24,8 +26,6 @@ run.candidateRetrieval<-function(settingsObject) {
     if(class(settingsObject) != "list") stop("Error: Settings object must be of type list!")
     if(is.null(names(settingsObject))) stop("Error: Settings object does not contain valid names!")
     if(length(settingsObject) == 0) stop("Error: Settings object does not contain valid values!")
-    
-    
     
     getDatatype<-function(name, value) {
         vector = FALSE;
@@ -262,33 +262,46 @@ run.candidateRetrieval<-function(settingsObject) {
     datatypes<-list()
     
     if(numberCandidates >= 1) {
-        candidate <- .jcall(candidateList, "Lde/ipbhalle/metfraglib/interfaces/ICandidate;", "getElement", as.integer(0))
+        candidate <- .jcall(candidateList, 
+                            "Lde/ipbhalle/metfraglib/interfaces/ICandidate;",
+                            "getElement", as.integer(0))
         propertyNames <- .jcall(candidate, "[S", "getPropertyNames")
         sapply(1:length(propertyNames), function(propertyIndex) {
-            datatypes[[propertyNames[propertyIndex]]]<<-.jcall(candidate, "Ljava/lang/Object;", "getProperty", propertyNames[propertyIndex])$getClass()$getName()
+            datatypes[[propertyNames[propertyIndex]]] <<- .jcall(
+                candidate, "Ljava/lang/Object;",
+                "getProperty", propertyNames[propertyIndex])$getClass()$getName()
         })
     }
     
-    candidateProperties<-list()
+    candidateProperties <- list()
     sapply(1:length(propertyNames), function(propertyIndex) {
         candidateProperties[[propertyNames[propertyIndex]]] <<- vector(mode = "character", length = 0)
     })
     sapply(1:numberCandidates, function(candidateIndex) {
-        candidate <- .jcall(candidateList, "Lde/ipbhalle/metfraglib/interfaces/ICandidate;", "getElement", as.integer(candidateIndex - 1))
+        candidate <- .jcall(
+            candidateList, "Lde/ipbhalle/metfraglib/interfaces/ICandidate;", 
+            "getElement", as.integer(candidateIndex - 1))
+        
         sapply(1:length(propertyNames), function(propertyIndex) {
-            value <- .jcall(candidate, "Ljava/lang/Object;", "getProperty", propertyNames[propertyIndex])$toString()
-            candidateProperties[[propertyNames[propertyIndex]]] <<- c(candidateProperties[[propertyNames[propertyIndex]]], value)
+            value <- .jcall(
+                candidate, "Ljava/lang/Object;",
+                "getProperty", propertyNames[propertyIndex])$toString()
+            candidateProperties[[propertyNames[propertyIndex]]] <<- c(
+                candidateProperties[[propertyNames[propertyIndex]]], value)
         })
     })
     
     sapply(1:length(propertyNames), function(propertyIndex) {
-        datatype<-datatypes[[propertyNames[propertyIndex]]]
-        if(datatype == "java.lang.Double" || datatype == "java.lang.Byte" || datatype == "java.lang.Integer" || datatype == "java.lang.Float") {
-            suppressWarnings(candidateProperties[[propertyNames[propertyIndex]]]<<-as.numeric(candidateProperties[[propertyNames[propertyIndex]]]))
+        datatype <- datatypes[[propertyNames[propertyIndex]]]
+        if(datatype == "java.lang.Double" ||
+           datatype == "java.lang.Byte" || 
+           datatype == "java.lang.Integer" || 
+           datatype == "java.lang.Float") {
+            suppressWarnings(
+                candidateProperties[[propertyNames[propertyIndex]]] <<- as.numeric(
+                    candidateProperties[[propertyNames[propertyIndex]]]))
         }
     })
-    
-    datatypes[["NumberPeaksUsed"]]<-"java.lang.Integer"
     
     return(as.data.frame(candidateProperties))
 }

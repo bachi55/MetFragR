@@ -12,6 +12,7 @@ export(plotMetClust)
 export(plotMol)
 export(create.settings.sample)
 export(run.metfrag)
+export{run.candidateRetrieval}
 export(score.molecules.from.sdf)
 export(score.molecules.from.container)
 export(frag.generateFragments)
